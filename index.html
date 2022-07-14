@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<title>Kolam Iwak by TopEx</title>
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ripples.js"></script>
+<script src="js/jquery.simulate.js"></script>
+<script src="js/jquery.simulate.ext.js"></script>
+<script src="js/jquery.simulate.drag-n-drop.js"></script>
+<style>
+body,input,button,textarea,select {
+	font:12px Arial,Segoe UI,sans-serif;
+	line-height:20px;
+}
+body {
+	margin:0;
+	padding:0;
+}
+img.btn {
+	cursor:pointer;
+}
+img.btn:active {
+	width:28px;
+	height:28px;
+}
+#iwak {
+	position:relative;
+	pointer-events:none;
+}
+#omong {
+	position:absolute;
+	pointer-events:none;
+	margin:-11px 0 0 0;
+	/*display:none;*/
+}
+.bak {
+	width:1000px;
+	position:relative;
+	-ms-user-select:none;
+	-moz-user-select:-moz-none;
+	-khtml-user-select:none;
+	-webkit-user-select:none;
+	user-select:none;
+}
+.kolam {
+	background-image:url(img/banyu.jpg);
+	width:1000px;
+	height:600px;
+	position:absolute;
+	top:0;
+	left:0;
+	-webkit-mask-box-image:url(img/mask.png) 75 stretch;
+	overflow:hidden;
+	cursor:default;
+}
+.pakan {
+	width:3px;
+	height:3px;
+	display:inline-block;
+	border-radius:6px;
+	background:url(img/pakan.jpg);
+	border:1px solid rgba(0,0,0,.1);
+	position:absolute;
+	z-index:999;
+	pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div style="width:200px;float:right;text-align:right;margin:60px 20px 0 0">
+<h1 onclick="alert(dum)">Kolam Iwak</h1>
+<p>Created by TopEx.<br/>Using jquery-ripple by sirxemic and jquery-simulate-ext by j-ulrich.<br/>Best view in Google Chrome/Safari.</p>
+<p>makan: <span id="d_pakan" style="font-size:16px">0</span></p>
+<p>cara kasih makan: klik-klik aja</p>
+<p><img class="btn" id="btn_mute" src="img/play.png" onclick="mute()"/></p>
+<p style="font-size:11px;line-height:14px">Icons used are by Dat Nguyen &<br/>David Vignoni.<br/><br/>Copyright &copy;2015 by TopEx</p>
+</div>
+
+<div class="bak">
+<div class="kolam">
+<img id="iwak" src="img/iwak.png"/>
+<img id="omong" src="img/omong.png"/>
+</div>
+</div>
+
+<audio class="sfx_ambience1" src="sfx/ambience1.mp3" autoplay loop/>
+<audio class="sfx_pakan1" src="sfx/pakan1.mp3"/>
+<audio class="sfx_pakan2" src="sfx/pakan2.mp3"/>
+<audio class="sfx_krauk" src="sfx/krauk.mp3"/>
+<audio class="sfx_glegek" src="sfx/glegek.mp3"/>
+<audio class="sfx_blup1" src="sfx/blup1.mp3"/>
+<audio class="sfx_blup2" src="sfx/blup2.mp3"/>
+
+<script>
+var
+iwak=$('#iwak,#omong'),
+mouseX=0,
+mouseY=0,
+panjang_kolam=$('.kolam').width(),
+lebar_kolam=$('.kolam').height(),
+sentuh=0,
+lama=0,
+dum=100,
+gerakX,
+gerakY,
+xp=0,
+yp=0,
+radians,
+rot,
+loop;
+$(function() {
+	$(window)
+	.on({
+	'mousemove':function(e) {
+		//if (sentuh) {
+			var offset=$('.kolam').offset();
+			mouseX=Math.round(Math.min(e.pageX-offset.left,panjang_kolam-15));
+			mouseY=Math.round(Math.min(e.pageY-offset.top,lebar_kolam-15));
+			if (mouseX<0) mouseX=0;
+			if (mouseY<0) mouseY=0;
+		//}
+	},
+	'mouseenter':function() {sentuh=1;dum=20;},
+	'mouseleave':function() {sentuh=0;dum=100;},
+	'contextmenu':function() {return false;},
+	'mousedown':function(e) {
+		if (e.button==2) {
+			//klik kanan
+		}
+		if (sentuh) dum=10;
+	},
+	'click':function(e) {
+		//alert('makan');
+		if ($('.pakan').length<3) {
+			var n=$('.pakan').length+1;
+			$('.sfx_pakan1').trigger('play');
+			$('<div class="pakan" id="pakan'+n+'" style="top:'+e.pageY+'px;left:'+e.pageX+'px"></div>')
+			.appendTo('body')
+			.animate({'left':e.pageX-4},200)
+			.animate({'left':e.pageX+2},200)
+			.animate({'left':e.pageX},200)
+			.animate({'left':e.pageX+acak(-20,20),'top':e.pageY+acak(-20,20),'opacity':0},1000)
+			//.fadeOut(500)
+			.fadeOut(500,function() { $(this).remove(); });
+			//.remove();
+		}
+		dum=20;
+	}},'.kolam');
+	$('.kolam').ripples({
+		resolution:512,
+		dropRadius:20,
+		perturbance:0.04,
+		interactive:true
+	});
+	loop=setInterval(function() {
+		xp+=(mouseX-xp)/dum;
+		yp+=(mouseY-yp)/dum;
+		radians=Math.atan2(mouseX-xp,mouseY-yp);
+		rot=parseInt((radians*(180/Math.PI)*-1)-90);
+		iwak
+		.css({left:xp,top:yp})
+		.css('-webkit-transform','rotate('+rot+'deg)')
+		.css('-moz-transform','rotate('+rot+'deg)')
+		.css('-ms-transform','rotate('+rot+'deg)')
+		.css('-o-transform','rotate('+rot+'deg)')
+		.css('transform','rotate('+rot+'deg)');
+		if (!sentuh) {
+			if (lama>30) {
+				gerakX=mouseX;
+				gerakY=mouseY;
+				gerakX+=(mouseX<50)?acak(10,100):(mouseX>panjang_kolam-50)?acak(-100,-10):acak(-50,50);
+				gerakY+=(mouseY<50)?acak(10,100):(mouseY>lebar_kolam-50)?acak(-100,-10):acak(-50,50);
+				if (iwak.width()<25 && rot>-10 && rot<25) $('#omong').show(0);
+				lama=0;
+				//simulate air kolam
+				$('.kolam').simulate('drag',{dx:acak(-1*(panjang_kolam/2),(panjang_kolam/2)),dy:acak(-1*(lebar_kolam/2),(lebar_kolam/2)),interpolation:{stepWidth:300,stepDelay:1000}});
+			}
+			gerak();
+			lama++;
+		}
+		if (makan($('#pakan1')) || makan($('#pakan2')) || makan($('#pakan3'))) {
+			//alert('nice');
+		}
+		//if (iwak.width()<25 && rot>-10 && rot<25) $('#omong').show(100); else $('#omong').hide(100);
+		if (rot<=-10 || rot>=25) $('#omong').hide(100);
+	},30);
+});
+function acak(min,max) {
+	return Math.floor(Math.random()*(max-min+1)+min);
+}
+function gerak() {
+	var belokX=(Math.abs(mouseX-gerakX)>1)?2:1,belokY=(Math.abs(mouseY-gerakY)>1)?2:1;
+	if (mouseX<gerakX) mouseX+=belokX; else mouseX-=belokX;
+	if (mouseY<gerakY) mouseY+=belokY; else mouseY-=belokY;
+}
+function makan(pakan) {
+	if (!pakan.length) return;
+	var
+	x1 = iwak.offset().left,
+	y1 = iwak.offset().top,
+	h1 = iwak.outerHeight(true),
+	w1 = iwak.outerWidth(true),
+	b1 = y1+h1,
+	r1 = x1+w1,
+	x2 = pakan.offset().left,
+	y2 = pakan.offset().top,
+	h2 = pakan.outerHeight(true),
+	w2 = pakan.outerWidth(true),
+	b2 = y2+h2,
+	r2 = x2+w2;
+	maem = parseInt($('#d_pakan').text());
+
+	if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2 || acak(1,2)==1) return false;
+	iwak.css({'width':(iwak.width()+1)+'px'});
+	$('.sfx_krauk').trigger('play');
+	$('#omong').css('marginTop',(-11-maem)+'px');
+	pakan.remove();
+	$('#d_pakan').text(maem+1);
+	if ((maem+1)%10==0) $('.sfx_glegek').trigger('play');
+	return true;
+}
+function mute() {
+	var sfx = $('.sfx_ambience1');
+	if (sfx.prop('paused')) {
+		sfx.trigger('play');
+		$('#btn_mute').attr('src','img/play.png');
+	} else {
+		sfx.trigger('pause');
+		$('#btn_mute').attr('src','img/mute.png');
+	}
+}
+</script>
+</body>
+</html>
