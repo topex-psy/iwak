@@ -2,17 +2,14 @@
 <html lang="id">
 <head>
 <meta charset="utf-8"/>
-<title>Kolam Iwak by TopEx</title>
+<title>Kolam Iwak</title>
+<link rel="shortcut icon" href="favicon.png" />
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ripples.js"></script>
 <script src="js/jquery.simulate.js"></script>
 <script src="js/jquery.simulate.ext.js"></script>
 <script src="js/jquery.simulate.drag-n-drop.js"></script>
 <style>
-body,input,button,textarea,select {
-	font:12px Arial,Segoe UI,sans-serif;
-	line-height:20px;
-}
 body {
 	margin:0;
 	padding:0;
@@ -27,6 +24,7 @@ img.btn:active {
 #iwak {
 	position:relative;
 	pointer-events:none;
+	width: 20px;
 }
 #omong {
 	position:absolute;
@@ -35,7 +33,7 @@ img.btn:active {
 	/*display:none;*/
 }
 .bak {
-	width:1000px;
+	width:100vw;
 	position:relative;
 	-ms-user-select:none;
 	-moz-user-select:-moz-none;
@@ -45,12 +43,12 @@ img.btn:active {
 }
 .kolam {
 	background-image:url(img/banyu.jpg);
-	width:1000px;
-	height:600px;
+	width:100vw;
+	height:100vh;
 	position:absolute;
 	top:0;
 	left:0;
-	-webkit-mask-box-image:url(img/mask.png) 75 stretch;
+	/* -webkit-mask-box-image:url(img/mask.png) 75 stretch; */
 	overflow:hidden;
 	cursor:default;
 }
@@ -65,23 +63,42 @@ img.btn:active {
 	z-index:999;
 	pointer-events:none;
 }
+#gura {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 50vh;
+	animation: gura 9s cubic-bezier(0.5, 1, 0.5, 1) infinite;
+}
+@keyframes gura {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-20px);
+  } 
+  100% {
+    transform: translateX(0);
+  } 
+}
 </style>
 </head>
 <body>
 
-<div style="width:200px;float:right;text-align:right;margin:60px 20px 0 0">
-<h1 onclick="alert(dum)">Kolam Iwak</h1>
+<!-- <div style="width:200px;float:right;text-align:right;margin:60px 20px 0 0">
+<h1>Kolam Iwak</h1>
 <p>Created by TopEx.<br/>Using jquery-ripple by sirxemic and jquery-simulate-ext by j-ulrich.<br/>Best view in Google Chrome/Safari.</p>
 <p>makan: <span id="d_pakan" style="font-size:16px">0</span></p>
 <p>cara kasih makan: klik-klik aja</p>
 <p><img class="btn" id="btn_mute" src="img/play.png" onclick="mute()"/></p>
 <p style="font-size:11px;line-height:14px">Icons used are by Dat Nguyen &<br/>David Vignoni.<br/><br/>Copyright &copy;2015 by TopEx</p>
-</div>
+</div> -->
 
 <div class="bak">
 <div class="kolam">
 <img id="iwak" src="img/iwak.png"/>
 <img id="omong" src="img/omong.png"/>
+<img id="gura" src="img/gura.png"/>
 </div>
 </div>
 
